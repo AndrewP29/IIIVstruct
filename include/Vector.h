@@ -16,6 +16,8 @@ public:
     void setY(double y);
     void setZ(double z);
 
+    Vector cross(const Vector& other) const;
+
 private:
     double x_, y_, z_;
 };

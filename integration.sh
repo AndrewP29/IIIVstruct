@@ -21,4 +21,4 @@ make
 cd ..
 
 # Run the visualization script
-python3 python/visualize_vector.py
+python3 python/visualize.py
