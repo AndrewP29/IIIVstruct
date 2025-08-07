@@ -1,33 +1,36 @@
 # Changelog
 
-## 2025-08-06
+## 2025-08-06 (Session 2)
+
+### Features & Enhancements
+- **Interactive Visualization**: The Python integration test (`python/visualize.py`) now features interactive checkboxes to toggle the visibility of vertices, faces, and the infinite plane in the 3D plot.
+- **Plane Representation**: Created a dedicated `Plane` struct in C++ (`include/Plane.h`) to properly represent the `Ax + By + Cz + D = 0` equation, improving code clarity.
+- **Robustness**: Implemented a crucial unit test (`test_vertices_on_plane`) to mathematically verify that all vertices of a `Face` correctly lie on the plane it calculates.
+
+### Python Integration
+- **Bindings**: Bound the new `Plane` struct and the `Face` class (including `getVertices` and `getPlaneEquation` methods) to Python using `pybind11`.
+- **Dependencies**: Added `numpy` to the `python/requirements.txt` file.
+
+### Bug Fixes
+- Fixed a C++ compilation error (`unknown type name 'Plane'`) by adding the necessary `#include "Plane.h"` directive in `Face.h`.
+- Corrected a Python `ImportError` for `numpy` by adding it to the requirements file.
+
+### Documentation
+- **README**: Significantly updated the `README.md` to reflect the current project structure, features, and execution instructions.
+- **Changelog**: Maintained this changelog to track progress.
+
+---
+
+## 2025-08-06 (Session 1)
 
 ### Project Scaffolding & Automation
-- Initialized the project directory structure:
-  - `src/lib`
-  - `include`
-  - `examples`
-  - `tests`
-  - `benchmarks`
-  - `profiling`
-- Created the main `README.md` file with the project description and goals.
-- Added executable shell scripts for automating common tasks:
-  - `run.sh`: To run the main application (via Python bindings).
-  - `test.sh`: For running unit tests.
-  - `integration.sh`: Placeholder for integration tests.
-  - `performance.sh`: For running benchmarks and profiling tools.
-- Added a placeholder `python/main.py` script.
+- Initialized the project directory structure (`src`, `include`, `tests`, etc.).
+- Created shell scripts for automation (`run.sh`, `test.sh`, `integration.sh`).
 
 ### Core C++ Development
-- Created the `Vector` class as a foundational 3D vector object.
-  - Header: `include/Vector.h`
-  - Implementation: `src/lib/Vector.cpp`
-- Added a unit test for the `Vector` class to verify its functionality (`tests/test_vector.cpp`).
+- Created the `Vector` class (`Vector.h`, `Vector.cpp`).
+- Added a unit test for the `Vector` class (`tests/test_vector.cpp`).
 
 ### Build System
-- Configured the project with CMake to manage the build process.
-- Created `CMakeLists.txt` files in the root directory, `src/lib`, and `tests`.
-- Successfully compiled the `layerlib` library and the `test_vector` executable.
-
-### Verification
-- Executed the `./test.sh` script, which successfully built the project and ran the `test_vector` unit test, confirming the `Vector` class is working correctly.
+- Configured the project with CMake.
+- Added `pybind11` for Python bindings and enabled Position-Independent Code (`-fPIC`).

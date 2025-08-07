@@ -32,10 +32,11 @@ void test_plane_equation() {
 }
 
 void test_vertices_on_plane() {
+    // Use non-collinear vertices to form a valid plane
     std::vector<IIIV::Vector> vertices = {
-        {2.0, 3.0, 4.0},
-        {1.0, 5.0, 2.0},
-        {3.0, 1.0, 6.0}
+        {1.0, 2.0, 3.0},
+        {4.0, 5.0, 6.0},
+        {7.0, 8.0, 10.0}
     };
     IIIV::Face face(vertices);
     IIIV::Plane plane = face.getPlaneEquation();
