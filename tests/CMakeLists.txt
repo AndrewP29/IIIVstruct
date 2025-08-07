@@ -1,9 +1,20 @@
-add_executable(test_vector test_vector.cpp)
-target_link_libraries(test_vector layerlib)
+# Enable CTest
+enable_testing()
 
-add_test(NAME test_vector COMMAND test_vector)
+# Create the test executable
+add_executable(
+  run_tests
+  test_vector.cpp
+  test_face.cpp
+)
 
-add_executable(test_face test_face.cpp)
-target_link_libraries(test_face layerlib)
+# Link against our library and Google Test
+target_link_libraries(
+  run_tests
+  GTest::gtest_main
+  layerlib
+)
 
-add_test(NAME test_face COMMAND test_face)
+# Add the test to CTest
+include(GoogleTest)
+gtest_discover_tests(run_tests)
