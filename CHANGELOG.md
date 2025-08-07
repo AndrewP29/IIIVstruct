@@ -1,5 +1,54 @@
 # Changelog
 
+## 2025-08-06 (Session 5)
+
+### Core Library Features
+- **Face Inversion**: Added `invert()` method to the `Face` class, which reverses the order of vertex indices and recalculates the face normal, effectively flipping its orientation.
+- **Normal Calculation Refinement**: Extracted normal calculation into a private `calculateNormal()` helper method in `Face.cpp` to ensure consistency upon construction and inversion.
+
+### Testing
+- **New Face Test**: Added `TEST_F(FaceTest, InvertMethodFlipsNormal)` to `tests/test_face.cpp` to verify the correct behavior of the `invert()` method.
+
+### Python Integration
+- **Bindings Update**: Exposed the new `invert()` method of the `Face` class to Python via `pybind11`.
+
+### Documentation
+- Updated `TODO.md` and `CHANGELOG.md` to reflect the new features and completed tasks.
+
+---
+
+## 2025-08-06 (Session 4)
+
+### Core Library Refactoring
+- **Renamed `Vector` to `Vertex`**: To avoid confusion and better reflect its role as a point in space, the `Vector` class has been renamed to `Vertex`. This involved:
+  - Renaming `include/Vector.h` to `include/Vertex.h`.
+  - Renaming `src/lib/Vector.cpp` to `src/lib/Vertex.cpp`.
+  - Renaming `tests/test_vector.cpp` to `tests/test_vertex.cpp`.
+  - Updating all C++ code references (`#include`, class names, function signatures).
+  - Updating Python bindings (`src/bindings.cpp`).
+  - Updating CMake files (`src/lib/CMakeLists.txt`, `tests/CMakeLists.txt`).
+  - Updating Python visualization script (`python/visualize.py`).
+
+---
+
+## 2025-08-06 (Session 3)
+
+### Core Library Refactoring
+- **Face Class Redesign**: `Face` now references a shared list of `Vertex` objects via indices, enabling efficient representation of solid objects.
+- **Explicit Normal**: `Face` constructor now calculates and stores an explicit `normal_` Vertex, accessible via `getNormal()`.
+
+### Testing Framework
+- **Google Test Integration**: Replaced custom unit tests with Google Test framework for `Vertex` and `Face` classes, providing detailed test output and robust assertion capabilities.
+
+### Python Integration
+- **Updated Bindings**: Modified `pybind11` bindings for `Face` to accommodate the new constructor signature (shared vertex list and indices).
+- **Enhanced Visualization**: `python/visualize.py` now plots the `Face` normal and uses the new `Face` constructor.
+
+### Bug Fixes
+- Corrected `test_face.cpp` to use non-collinear vertices in `test_vertices_on_plane` to prevent test crashes.
+
+---
+
 ## 2025-08-06 (Session 2)
 
 ### Features & Enhancements

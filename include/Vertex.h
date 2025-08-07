@@ -1,12 +1,12 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VERTEX_H
+#define VERTEX_H
 
 namespace IIIV {
 
-class Vector {
+class Vertex {
 public:
-    Vector(double x = 0.0, double y = 0.0, double z = 0.0);
-    virtual ~Vector();
+    Vertex(double x = 0.0, double y = 0.0, double z = 0.0);
+    virtual ~Vertex();
 
     double getX() const;
     double getY() const;
@@ -16,7 +16,7 @@ public:
     void setY(double y);
     void setZ(double z);
 
-    Vector cross(const Vector& other) const;
+    Vertex cross(const Vertex& other) const;
 
 private:
     double x_, y_, z_;
@@ -24,4 +24,4 @@ private:
 
 } // namespace IIIV
 
-#endif // VECTOR_H
+#endif // VERTEX_H

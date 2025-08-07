@@ -4,7 +4,7 @@ enable_testing()
 # Create the test executable
 add_executable(
   run_tests
-  test_vector.cpp
+  test_vertex.cpp
   test_face.cpp
 )
 

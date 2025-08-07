@@ -1,34 +1,73 @@
 #include <gtest/gtest.h>
 #include "Face.h"
-#include "Vector.h"
+#include "Vertex.h"
 #include "Plane.h"
 #include <stdexcept>
+#include <memory>
 
-TEST(FaceTest, Creation) {
-    std::vector<IIIV::Vector> vertices = {{1,0,0}, {0,1,0}, {0,0,1}};
-    ASSERT_NO_THROW(IIIV::Face face(vertices));
+class FaceTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        master_vertices = std::make_shared<std::vector<IIIV::Vertex>>();
+        master_vertices->push_back({1,0,0}); // 0
+        master_vertices->push_back({0,1,0}); // 1
+        master_vertices->push_back({0,0,1}); // 2
+        master_vertices->push_back({0,0,0}); // 3
+    }
+
+    std::shared_ptr<std::vector<IIIV::Vertex>> master_vertices;
+};
+
+TEST_F(FaceTest, CreationAndNormal) {
+    std::vector<size_t> indices = {0, 1, 3};
+    IIIV::Face face(master_vertices, indices);
+    
+    auto vertices = face.getVertices();
+    ASSERT_EQ(vertices.size(), 3);
+    EXPECT_EQ(vertices[0].getX(), 1);
+    EXPECT_EQ(vertices[1].getY(), 1);
+    EXPECT_EQ(vertices[2].getZ(), 0);
+
+    const auto& normal = face.getNormal();
+    EXPECT_EQ(normal.getX(), 0);
+    EXPECT_EQ(normal.getY(), 0);
+    EXPECT_EQ(normal.getZ(), 1);
 }
 
-TEST(FaceTest, ThrowsOnCollinearVertices) {
-    std::vector<IIIV::Vector> vertices = {{1,1,1}, {2,2,2}, {3,3,3}};
-    ASSERT_THROW(IIIV::Face face(vertices), std::invalid_argument);
+TEST_F(FaceTest, ThrowsOnCollinearVertices) {
+    master_vertices->push_back({2,0,0}); // 4
+    std::vector<size_t> indices = {0, 4, 3}; // (1,0,0), (2,0,0), (0,0,0) -> Collinear
+    ASSERT_THROW(IIIV::Face face(master_vertices, indices), std::invalid_argument);
 }
 
-TEST(FaceTest, PlaneEquation) {
-    std::vector<IIIV::Vector> vertices = {{1,0,0}, {0,1,0}, {0,0,0}};
-    IIIV::Face face(vertices);
+TEST_F(FaceTest, PlaneEquation) {
+    std::vector<size_t> indices = {0, 1, 2};
+    IIIV::Face face(master_vertices, indices);
     IIIV::Plane plane = face.getPlaneEquation();
-    // Normal vector should be (0, 0, 1) for a face on the XY plane
-    EXPECT_EQ(plane.normal.getX(), 0);
-    EXPECT_EQ(plane.normal.getY(), 0);
-    EXPECT_EQ(plane.normal.getZ(), 1);
-    // Plane passes through origin, so D should be 0
-    EXPECT_EQ(plane.d, 0);
+    // For vertices (1,0,0), (0,1,0), (0,0,1), the normal should be (1,1,1) and D should be -1
+    EXPECT_NEAR(plane.normal.getX(), 1, 1e-9);
+    EXPECT_NEAR(plane.normal.getY(), 1, 1e-9);
+    EXPECT_NEAR(plane.normal.getZ(), 1, 1e-9);
+    EXPECT_NEAR(plane.d, -1, 1e-9);
 }
 
-TEST(FaceTest, VerticesLieOnPlane) {
-    std::vector<IIIV::Vector> vertices = {{1,2,3}, {4,5,6}, {7,8,10}};
-    IIIV::Face face(vertices);
+TEST_F(FaceTest, InvertMethodFlipsNormal) {
+    std::vector<size_t> indices = {0, 1, 2}; // Original order
+    IIIV::Face face(master_vertices, indices);
+    IIIV::Vertex original_normal = face.getNormal();
+
+    face.invert(); // Invert the face
+    IIIV::Vertex inverted_normal = face.getNormal();
+
+    // The inverted normal should be the negative of the original normal
+    EXPECT_NEAR(inverted_normal.getX(), -original_normal.getX(), 1e-9);
+    EXPECT_NEAR(inverted_normal.getY(), -original_normal.getY(), 1e-9);
+    EXPECT_NEAR(inverted_normal.getZ(), -original_normal.getZ(), 1e-9);
+}
+
+TEST_F(FaceTest, VerticesLieOnPlane) {
+    std::vector<size_t> indices = {0, 1, 2};
+    IIIV::Face face(master_vertices, indices);
     IIIV::Plane plane = face.getPlaneEquation();
 
     for (const auto& v : face.getVertices()) {
