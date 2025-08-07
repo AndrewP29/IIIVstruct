@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblayerlib.a CMakeFiles/layerlib.dir/Vector.cpp.o
-/usr/bin/ranlib liblayerlib.a
