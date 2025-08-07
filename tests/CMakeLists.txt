@@ -6,6 +6,7 @@ add_executable(
   run_tests
   test_vertex.cpp
   test_face.cpp
+  test_solid.cpp
 )
 
 # Link against our library and Google Test

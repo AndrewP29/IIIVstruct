@@ -3,6 +3,7 @@
 #include "Vertex.h"
 #include "Face.h"
 #include "Plane.h"
+#include "Solid.h"
 
 namespace py = pybind11;
 
@@ -30,4 +31,12 @@ PYBIND11_MODULE(iiiv, m) {
         .def("getNormal", &IIIV::Face::getNormal, py::return_value_policy::reference)
         .def("getPlaneEquation", &IIIV::Face::getPlaneEquation)
         .def("invert", &IIIV::Face::invert);
+
+    py::class_<IIIV::Solid>(m, "Solid")
+        .def(py::init([](const std::vector<IIIV::Vertex>& all_vertices_py, const std::vector<IIIV::Face>& faces_py) {
+            auto all_vertices_cpp = std::make_shared<std::vector<IIIV::Vertex>>(all_vertices_py);
+            return IIIV::Solid(all_vertices_cpp, faces_py);
+        }), py::arg("all_vertices"), py::arg("faces"))
+        .def("isClosed", &IIIV::Solid::isClosed)
+        .def("getFaces", &IIIV::Solid::getFaces, py::return_value_policy::reference);
 }

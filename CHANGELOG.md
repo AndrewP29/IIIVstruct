@@ -1,5 +1,38 @@
 # Changelog
 
+## 2025-08-06 (Session 7)
+
+### Python Integration
+- **Solid Visualization**: Integrated `Solid` class into `python/visualize.py`.
+  - Created a sample cube `Solid` object.
+  - Implemented plotting of `Solid` faces using `Poly3DCollection`.
+  - Added interactive toggles for `Solid` and `Vertex` visibility.
+- **Bindings Update**: Exposed `Solid` class and its `getFaces()` method to Python via `pybind11`.
+
+### Documentation
+- Updated `TODO.md` and `CHANGELOG.md` to reflect the new features and completed tasks.
+
+---
+
+## 2025-08-06 (Session 6)
+
+### Core Library Features
+- **Solid Class**: Introduced `Solid` class to represent 3D objects composed of `Face` objects.
+- **Edge Struct**: Created `Edge` struct to represent an edge by its two vertex indices, used for manifold checks.
+- **Manifold Check**: Implemented `isClosed()` method in `Solid` to verify if the object is manifold (each edge shared by exactly two faces).
+
+### Testing
+- **New Solid Tests**: Added `test_solid.cpp` with tests for `Solid` creation and `isClosed()` method, including examples of closed and open solids.
+
+### Bug Fixes
+- Added `getIndices()` method to `Face` class to allow `Solid` to access face vertex indices for manifold checks.
+- Added missing `#include <algorithm>` to `src/lib/Face.cpp` for `std::reverse`.
+
+### Documentation
+- Updated `TODO.md` and `CHANGELOG.md` to reflect the new features and completed tasks.
+
+---
+
 ## 2025-08-06 (Session 5)
 
 ### Core Library Features

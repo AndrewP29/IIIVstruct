@@ -38,6 +38,12 @@ public:
     const IIIV::Vertex& getNormal() const;
 
     /**
+     * @brief Gets the indices of the vertices that make up this face.
+     * @return A const reference to the vector of vertex indices.
+     */
+    const std::vector<size_t>& getIndices() const;
+
+    /**
      * @brief Inverts the face by reversing the order of its vertices, which flips its normal.
      */
     void invert();
