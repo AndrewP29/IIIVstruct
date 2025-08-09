@@ -37,6 +37,5 @@ PYBIND11_MODULE(iiiv, m) {
             auto all_vertices_cpp = std::make_shared<std::vector<IIIV::Vertex>>(all_vertices_py);
             return IIIV::Solid(all_vertices_cpp, faces_py);
         }), py::arg("all_vertices"), py::arg("faces"))
-        .def("isClosed", &IIIV::Solid::isClosed)
         .def("getFaces", &IIIV::Solid::getFaces, py::return_value_policy::reference);
 }

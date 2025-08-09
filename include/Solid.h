@@ -30,12 +30,6 @@ public:
      *        A solid is closed if every edge is shared by exactly two faces.
      * @return True if the solid is closed, false otherwise.
      */
-    bool isClosed() const;
-
-    /**
-     * @brief Gets the faces that compose the solid.
-     * @return A const reference to the vector of Face objects.
-     */
     const std::vector<Face>& getFaces() const;
 
 private:

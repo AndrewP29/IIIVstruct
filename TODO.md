@@ -41,8 +41,12 @@
 - [x] Plot a `Face` and its corresponding infinite plane.
 - [x] Plot `Face` normal.
 - [x] Add interactive toggles for visualization elements.
-- [x] Plot a `Solid` object.
+- [ ] Plot a `Solid` object.
+
+## GUI & Layer Stacking
+- [ ] Implement basic Tkinter GUI for defining rectangular prisms.
+- [ ] Implement `create_rectangular_prism` helper function.
+- [ ] **Define Top Surface**: Implement a mechanism to identify all faces that constitute the top surface of the stacked solids (not covered by another face, not touching Z=0).
 
 ## Testing Framework
 - [x] Integrate Google Test for C++ unit testing.
-

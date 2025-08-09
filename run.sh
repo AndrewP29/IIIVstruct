@@ -12,4 +12,4 @@ if [ ! -f "build/lib/liblayerlib.so" ]; then
 fi
 
 # Run the python script
-python3 python/main.py
+python3 main.py

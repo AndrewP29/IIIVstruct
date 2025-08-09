@@ -1,5 +1,32 @@
 # Changelog
 
+## 2025-08-06 (Session 9)
+
+### Revert Changes
+- Reverted `src/lib` to its state before `LayerStack` and related top surface logic were introduced.
+  - Removed `src/lib/LayerStack.cpp`.
+  - Updated `src/lib/CMakeLists.txt` to remove `LayerStack.cpp`.
+  - Reverted `src/lib/Face.cpp` to remove `getAABB()` implementation and `#include <limits>`.
+  - Reverted `include/Face.h` to remove `getAABB()` declaration.
+  - Removed `include/LayerStack.h` and `include/Edge.h`.
+  - Reverted `src/bindings.cpp` to remove `LayerStack` bindings.
+  - Reverted `python/main.py` to its state before `LayerStack` usage and `create_rectangular_prism`.
+  - Reverted `python/visualize.py` to its state before sample stack visualization.
+  - Reverted `run.sh` to point to `main.py` directly.
+
+---
+
+## 2025-08-06 (Session 8)
+
+### Core Library Features
+- **Top Surface Identification**: Added `getTopSurfaceFaces()` method to `Solid` class to identify upward-facing faces. (Initial implementation, further refinement for occlusion detection pending).
+- **Bounding Box**: Added `getBoundingBox()` method to `Face` class to return min/max `Vertex` coordinates, facilitating spatial queries.
+
+### Documentation
+- Updated `TODO.md` and `CHANGELOG.md` to reflect the new features and completed tasks.
+
+---
+
 ## 2025-08-06 (Session 7)
 
 ### Python Integration
