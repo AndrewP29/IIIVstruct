@@ -45,10 +45,10 @@ TEST_F(FaceTest, PlaneEquation) {
     IIIV::Face face(master_vertices, indices);
     IIIV::Plane plane = face.getPlaneEquation();
     // For vertices (1,0,0), (0,1,0), (0,0,1), the normal should be (1,1,1) and D should be -1
-    EXPECT_NEAR(plane.normal.getX(), 1, 1e-9);
-    EXPECT_NEAR(plane.normal.getY(), 1, 1e-9);
-    EXPECT_NEAR(plane.normal.getZ(), 1, 1e-9);
-    EXPECT_NEAR(plane.d, -1, 1e-9);
+    EXPECT_NEAR(plane.getA(), 1, 1e-9);
+    EXPECT_NEAR(plane.getB(), 1, 1e-9);
+    EXPECT_NEAR(plane.getC(), 1, 1e-9);
+    EXPECT_NEAR(plane.getD(), -1, 1e-9);
 }
 
 TEST_F(FaceTest, InvertMethodFlipsNormal) {
@@ -71,10 +71,10 @@ TEST_F(FaceTest, VerticesLieOnPlane) {
     IIIV::Plane plane = face.getPlaneEquation();
 
     for (const auto& v : face.getVertices()) {
-        double result = plane.normal.getX() * v.getX() + 
-                        plane.normal.getY() * v.getY() + 
-                        plane.normal.getZ() * v.getZ() + 
-                        plane.d;
+        double result = plane.getA() * v.getX() + 
+                        plane.getB() * v.getY() + 
+                        plane.getC() * v.getZ() + 
+                        plane.getD();
         EXPECT_NEAR(result, 0, 1e-9);
     }
 }

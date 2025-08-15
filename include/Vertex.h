@@ -1,6 +1,8 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+#include "Plane.h" // Added this line back
+
 namespace IIIV {
 
 class Vertex {
@@ -17,6 +19,14 @@ public:
     void setZ(double z);
 
     Vertex cross(const Vertex& other) const;
+
+    /**
+     * @brief Projects the vertex onto a given plane. If no plane is provided, projects onto the XY plane (z=0).
+     * @param plane The plane to project onto.
+     * @return A new Vertex object representing the projected point.
+     */
+    Vertex project(const Plane& plane) const;
+    Vertex project() const;
 
 private:
     double x_, y_, z_;

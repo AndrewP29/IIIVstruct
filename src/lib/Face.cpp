@@ -11,6 +11,11 @@ Face::Face(std::shared_ptr<std::vector<IIIV::Vertex>> all_vertices, const std::v
         throw std::invalid_argument("A face must have at least 3 vertex indices.");
     }
 
+    // Check for duplicate indices among the first three vertices
+    if (indices_[0] == indices_[1] || indices_[0] == indices_[2] || indices_[1] == indices_[2]) {
+        throw std::invalid_argument("First three vertices of a face must be unique.");
+    }
+
     calculateNormal();
 }
 
@@ -47,15 +52,48 @@ void Face::calculateNormal() {
 
     normal_ = v1.cross(v2);
 
-    if (normal_.getX() == 0 && normal_.getY() == 0 && normal_.getZ() == 0) {
+    const double EPSILON = 1e-9;
+    if (std::abs(normal_.getX()) < EPSILON &&
+        std::abs(normal_.getY()) < EPSILON &&
+        std::abs(normal_.getZ()) < EPSILON) {
         throw std::invalid_argument("Vertices are collinear, cannot form a plane.");
     }
 }
 
 Plane Face::getPlaneEquation() const {
     const IIIV::Vertex& p1 = (*vertices_ptr_)[indices_[0]];
-    double d = - (normal_.getX() * p1.getX() + normal_.getY() * p1.getY() + normal_.getZ() * p1.getZ());
-    return {normal_, d};
+    double d_val = - (normal_.getX() * p1.getX() + normal_.getY() * p1.getY() + normal_.getZ() * p1.getZ());
+    return {normal_.getX(), normal_.getY(), normal_.getZ(), d_val};
+}
+
+Face Face::project(const Plane& plane) const {
+    std::shared_ptr<std::vector<IIIV::Vertex>> projected_all_vertices = std::make_shared<std::vector<IIIV::Vertex>>();
+    std::vector<size_t> projected_indices;
+    projected_indices.reserve(indices_.size());
+
+    for (size_t i = 0; i < indices_.size(); ++i) {
+        const IIIV::Vertex& original_vertex = (*vertices_ptr_)[indices_[i]];
+        IIIV::Vertex projected_vertex = original_vertex.project(plane);
+        projected_all_vertices->push_back(projected_vertex);
+        projected_indices.push_back(i); // Indices into the new projected_all_vertices vector
+    }
+
+    return Face(projected_all_vertices, projected_indices);
+}
+
+Face Face::project() const {
+    std::shared_ptr<std::vector<IIIV::Vertex>> projected_all_vertices = std::make_shared<std::vector<IIIV::Vertex>>();
+    std::vector<size_t> projected_indices;
+    projected_indices.reserve(indices_.size());
+
+    for (size_t i = 0; i < indices_.size(); ++i) {
+        const IIIV::Vertex& original_vertex = (*vertices_ptr_)[indices_[i]];
+        IIIV::Vertex projected_vertex = original_vertex.project(); // Call the default project for Vertex
+        projected_all_vertices->push_back(projected_vertex);
+        projected_indices.push_back(i); // Indices into the new projected_all_vertices vector
+    }
+
+    return Face(projected_all_vertices, projected_indices);
 }
 
 } // namespace IIIV

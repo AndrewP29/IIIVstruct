@@ -1,5 +1,25 @@
 # Changelog
 
+## 2025-08-14 (Session 10)
+
+### Core Library Features
+- **Projection Methods**: Added `project()` method to `Vertex`, `Face`, and `Solid` classes, allowing projection onto a specified `Plane` or a default XY plane (z=0).
+- **Plane Class Refactoring**: Refactored `Plane` class to use `double` components (A, B, C, D) for its equation, breaking circular dependencies and improving clarity.
+
+### Python Integration
+- **Projection Bindings**: Exposed `project()` methods for `Vertex`, `Face`, and `Solid` to Python via `pybind11`.
+- **Plane Bindings Update**: Updated `Plane` class bindings to reflect the new component-based representation (A, B, C, D).
+- **Visualization Script Update**: Modified `python/visualize.py` to correctly use the updated `Plane` interface.
+- **Projection Toggle**: Implemented a "Projected Solids" toggle in `python/visualize.py` that manually projects solid faces onto the XY plane (z=0) for visualization, bypassing C++ `Face` constructor issues. This now correctly hides original normals and planes when projected solids are shown.
+
+### Build System
+- Updated CMake configuration to include `Plane.cpp` as a source file.
+
+### Testing
+- Updated `tests/test_face.cpp` to reflect `Plane` class changes.
+
+---
+
 ## 2025-08-06 (Session 9)
 
 ### Revert Changes

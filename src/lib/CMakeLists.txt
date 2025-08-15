@@ -1,4 +1,4 @@
-add_library(layerlib Vertex.cpp Face.cpp Solid.cpp)
+add_library(layerlib Vertex.cpp Face.cpp Solid.cpp Plane.cpp)
 
 target_include_directories(layerlib PUBLIC ../../include)
 

@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'b
 
 from iiiv import Vertex, Face, Solid, Plane
 
-def plot_solids(solids):
+def plot_solids(original_solids):
     fig = plt.figure(figsize=(12, 9))
     ax = fig.add_subplot(111, projection='3d')
     plt.subplots_adjust(left=0.25)
@@ -21,19 +21,19 @@ def plot_solids(solids):
     all_min_y, all_max_y = float('inf'), float('-inf')
     all_min_z, all_max_z = float('inf'), float('-inf')
 
-    # Collect all vertices, faces, and normals from all solids
-    all_plot_vertices = []
-    all_plot_faces = []
-    all_plot_normals = []
-    all_plot_planes = []
+    # --- Data for Original Solids ---
+    original_plot_faces = []
+    original_plot_normals = []
+    original_plot_planes = []
+    original_plot_vertices = []
 
-    for solid in solids:
+    for solid in original_solids:
         for face_obj in solid.getFaces():
             face_verts = face_obj.getVertices()
             
             # Collect vertices for plotting
             for v in face_verts:
-                all_plot_vertices.append(v)
+                original_plot_vertices.append(v)
 
             # Collect faces for plotting
             xs = [v.getX() for v in face_verts]
@@ -41,26 +41,28 @@ def plot_solids(solids):
             zs = [v.getZ() for v in face_verts]
             verts_for_poly = [list(zip(xs, ys, zs))]
             poly = Poly3DCollection(verts_for_poly, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.5)
-            all_plot_faces.append(poly)
+            original_plot_faces.append(poly)
 
             # Collect normals for plotting
             normal = face_obj.getNormal()
             centroid_x = sum(xs) / len(xs)
             centroid_y = sum(ys) / len(ys)
             centroid_z = sum(zs) / len(zs)
-            all_plot_normals.append(ax.quiver(centroid_x, centroid_y, centroid_z, 
+            original_plot_normals.append(ax.quiver(centroid_x, centroid_y, centroid_z, 
                                               normal.getX(), normal.getY(), normal.getZ(), 
                                               color='blue', length=0.5, normalize=True))
 
             # Collect planes for plotting
             plane_obj = face_obj.getPlaneEquation()
-            plane_normal = plane_obj.normal
-            plane_d = plane_obj.d
+            plane_a = plane_obj.getA()
+            plane_b = plane_obj.getB()
+            plane_c = plane_obj.getC()
+            plane_d = plane_obj.getD()
 
             # Determine the dominant normal component to avoid division by zero
-            abs_nx = abs(plane_normal.getX())
-            abs_ny = abs(plane_normal.getY())
-            abs_nz = abs(plane_normal.getZ())
+            abs_nx = abs(plane_a)
+            abs_ny = abs(plane_b)
+            abs_nz = abs(plane_c)
 
             # Create a meshgrid for the plane
             # We'll use a larger range for the meshgrid to ensure the plane extends beyond the face
@@ -78,25 +80,57 @@ def plot_solids(solids):
             if abs_nz > abs_nx and abs_nz > abs_ny: # Dominant Z (mostly horizontal plane)
                 x_grid = np.linspace(face_min_x - plot_range, face_max_x + plot_range, 10)
                 y_grid = np.linspace(face_min_y - plot_range, face_max_y + plot_range, 10)
-                xx, yy = np.meshgrid(x_grid, y_grid)
-                zz = (-plane_normal.getX() * xx - plane_normal.getY() * yy - plane_d) / plane_normal.getZ()
-                all_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
+                xx, yy = np.meshgrid(x_grid, y_grid);
+                zz = (-plane_a * xx - plane_b * yy - plane_d) / plane_c;
+                original_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
             elif abs_ny > abs_nx and abs_ny > abs_nz: # Dominant Y (mostly XZ plane)
                 x_grid = np.linspace(face_min_x - plot_range, face_max_x + plot_range, 10)
                 z_grid = np.linspace(face_min_z - plot_range, face_max_z + plot_range, 10)
-                xx, zz = np.meshgrid(x_grid, z_grid)
-                yy = (-plane_normal.getX() * xx - plane_normal.getZ() * zz - plane_d) / plane_normal.getY()
-                all_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
+                xx, zz = np.meshgrid(x_grid, z_grid);
+                yy = (-plane_a * xx - plane_c * zz - plane_d) / plane_b;
+                original_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
             elif abs_nx > 1e-9: # Dominant X (mostly YZ plane)
                 y_grid = np.linspace(face_min_y - plot_range, face_max_y + plot_range, 10)
                 z_grid = np.linspace(face_min_z - plot_range, face_max_z + plot_range, 10)
-                yy, zz = np.meshgrid(y_grid, z_grid)
-                xx = (-plane_normal.getY() * yy - plane_normal.getZ() * zz - plane_d) / plane_normal.getX()
-                all_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
+                yy, zz = np.meshgrid(y_grid, z_grid);
+                xx = (-plane_b * yy - plane_c * zz - plane_d) / plane_a;
+                original_plot_planes.append(ax.plot_surface(xx, yy, zz, alpha=0.1, color='yellow'))
             else:
                 # Handle perfectly vertical planes (e.g., normal.getZ() == 0 and normal.getY() == 0)
                 # This case is rare for non-degenerate faces, but good to have a fallback
-                print(f"Warning: Could not plot plane for normal {plane_normal.getX()}, {plane_normal.getY()}, {plane_normal.getZ()}")
+                print(f"Warning: Could not plot plane for normal {plane_a}, {plane_b}, {plane_c}")
+
+            # Update overall limits
+            all_min_x = min(all_min_x, *xs)
+            all_max_x = max(all_max_x, *xs)
+            all_min_y = min(all_min_y, *ys)
+            all_max_y = max(all_max_y, *ys)
+            all_min_z = min(all_min_z, *zs)
+            all_max_z = max(all_max_z, *zs)
+
+    # --- Data for Projected Solids (manual projection in Python) ---
+    projected_plot_faces = []
+    projected_plot_vertices = []
+
+    for solid in original_solids:
+        for face_obj in solid.getFaces():
+            face_verts = face_obj.getVertices()
+            projected_face_verts = []
+            for v in face_verts:
+                # Manually project vertex onto XY plane (z=0)
+                projected_face_verts.append(Vertex(v.getX(), v.getY(), 0.0))
+            
+            # Collect faces for plotting
+            xs = [v.getX() for v in projected_face_verts]
+            ys = [v.getY() for v in projected_face_verts]
+            zs = [v.getZ() for v in projected_face_verts]
+            verts_for_poly = [list(zip(xs, ys, zs))]
+            poly = Poly3DCollection(verts_for_poly, facecolors='lightgreen', linewidths=1, edgecolors='darkgreen', alpha=.5)
+            projected_plot_faces.append(poly)
+
+            # Collect vertices for plotting
+            for v in projected_face_verts:
+                projected_plot_vertices.append(v)
 
             # Update overall limits
             all_min_x = min(all_min_x, *xs)
@@ -107,17 +141,21 @@ def plot_solids(solids):
             all_max_z = max(all_max_z, *zs)
 
     # Add all collected elements to the plot
-    for poly in all_plot_faces:
+    for poly in original_plot_faces:
         ax.add_collection3d(poly)
-    for normal_quiver in all_plot_normals:
+    for normal_quiver in original_plot_normals:
         ax.add_artist(normal_quiver)
-    for plane_surface in all_plot_planes:
+    for plane_surface in original_plot_planes:
         ax.add_artist(plane_surface)
+
+    for poly in projected_plot_faces:
+        ax.add_collection3d(poly)
+        poly.set_visible(False) # Initially hidden
 
     # Plot all unique vertices
     unique_vertices = []
     seen_coords = set()
-    for v in all_plot_vertices:
+    for v in original_plot_vertices + projected_plot_vertices:
         coords = (v.getX(), v.getY(), v.getZ())
         if coords not in seen_coords:
             unique_vertices.append(v)
@@ -150,22 +188,35 @@ def plot_solids(solids):
 
     # Add CheckButtons for toggling visibility
     rax = plt.axes([0.05, 0.4, 0.15, 0.2]) 
-    labels = ['Vertices', 'Faces', 'Normals', 'Planes']
-    visibility = [True, True, True, True]
+    labels = ['Vertices', 'Faces', 'Normals', 'Planes', 'Projected Solids']
+    visibility = [True, True, True, True, False] # Projected solids initially hidden
     check = CheckButtons(rax, labels, visibility)
 
     def func(label):
         if label == 'Vertices':
             p_vertices.set_visible(not p_vertices.get_visible())
         elif label == 'Faces':
-            for poly in all_plot_faces:
+            for poly in original_plot_faces:
                 poly.set_visible(not poly.get_visible())
         elif label == 'Normals':
-            for normal_quiver in all_plot_normals:
+            for normal_quiver in original_plot_normals:
                 normal_quiver.set_visible(not normal_quiver.get_visible())
         elif label == 'Planes':
-            for plane_surface in all_plot_planes:
+            for plane_surface in original_plot_planes:
                 plane_surface.set_visible(not plane_surface.get_visible())
+        elif label == 'Projected Solids':
+            # Toggle visibility of original solids
+            for poly in original_plot_faces:
+                poly.set_visible(not poly.get_visible())
+            # Hide normals and planes for original solids when projected are shown
+            for normal_quiver in original_plot_normals:
+                normal_quiver.set_visible(False)
+            for plane_surface in original_plot_planes:
+                plane_surface.set_visible(False)
+            
+            # Toggle visibility of projected solids (only faces)
+            for poly in projected_plot_faces:
+                poly.set_visible(not poly.get_visible())
         plt.draw()
 
     check.on_clicked(func)

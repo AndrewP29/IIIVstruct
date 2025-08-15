@@ -5,17 +5,19 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "Vertex.h"
-
 namespace IIIV {
 
-/**
- * @struct Plane
- * @brief Represents a plane equation Ax + By + Cz + D = 0.
- */
-struct Plane {
-    Vertex normal; // Contains A, B, C
-    double d;      // The D coefficient
+class Plane {
+public:
+    Plane(double a, double b, double c, double d);
+
+    double getA() const;
+    double getB() const;
+    double getC() const;
+    double getD() const;
+
+private:
+    double a_, b_, c_, d_;
 };
 
 } // namespace IIIV

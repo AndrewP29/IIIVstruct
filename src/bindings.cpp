@@ -15,11 +15,16 @@ PYBIND11_MODULE(iiiv, m) {
         .def("getZ", &IIIV::Vertex::getZ)
         .def("setX", &IIIV::Vertex::setX)
         .def("setY", &IIIV::Vertex::setY)
-        .def("setZ", &IIIV::Vertex::setZ);
+        .def("setZ", &IIIV::Vertex::setZ)
+        .def("project", py::overload_cast<const IIIV::Plane&>(&IIIV::Vertex::project, py::const_), py::arg("plane"))
+        .def("project", py::overload_cast<>(&IIIV::Vertex::project, py::const_));
 
     py::class_<IIIV::Plane>(m, "Plane")
-        .def_readwrite("normal", &IIIV::Plane::normal)
-        .def_readwrite("d", &IIIV::Plane::d);
+        .def(py::init<double, double, double, double>())
+        .def("getA", &IIIV::Plane::getA)
+        .def("getB", &IIIV::Plane::getB)
+        .def("getC", &IIIV::Plane::getC)
+        .def("getD", &IIIV::Plane::getD);
 
     py::class_<IIIV::Face>(m, "Face")
         .def(py::init([](const std::vector<IIIV::Vertex>& all_vertices_py, const std::vector<size_t>& vertex_indices_py) {
@@ -30,12 +35,16 @@ PYBIND11_MODULE(iiiv, m) {
         .def("getVertices", &IIIV::Face::getVertices)
         .def("getNormal", &IIIV::Face::getNormal, py::return_value_policy::reference)
         .def("getPlaneEquation", &IIIV::Face::getPlaneEquation)
-        .def("invert", &IIIV::Face::invert);
+        .def("invert", &IIIV::Face::invert)
+        .def("project", py::overload_cast<const IIIV::Plane&>(&IIIV::Face::project, py::const_), py::arg("plane"))
+        .def("project", py::overload_cast<>(&IIIV::Face::project, py::const_));
 
     py::class_<IIIV::Solid>(m, "Solid")
         .def(py::init([](const std::vector<IIIV::Vertex>& all_vertices_py, const std::vector<IIIV::Face>& faces_py) {
             auto all_vertices_cpp = std::make_shared<std::vector<IIIV::Vertex>>(all_vertices_py);
             return IIIV::Solid(all_vertices_cpp, faces_py);
         }), py::arg("all_vertices"), py::arg("faces"))
-        .def("getFaces", &IIIV::Solid::getFaces, py::return_value_policy::reference);
+        .def("getFaces", &IIIV::Solid::getFaces, py::return_value_policy::reference)
+        .def("project", py::overload_cast<const IIIV::Plane&>(&IIIV::Solid::project, py::const_), py::arg("plane"))
+        .def("project", py::overload_cast<>(&IIIV::Solid::project, py::const_));
 }

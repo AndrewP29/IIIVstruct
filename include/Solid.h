@@ -32,6 +32,14 @@ public:
      */
     const std::vector<Face>& getFaces() const;
 
+    /**
+     * @brief Projects the solid onto a given plane. If no plane is provided, projects onto the XY plane (z=0).
+     * @param plane The plane to project onto.
+     * @return A new Solid object representing the projected solid.
+     */
+    Solid project(const Plane& plane) const;
+    Solid project() const;
+
 private:
     std::shared_ptr<std::vector<Vertex>> vertices_ptr_;
     std::vector<Face> faces_;

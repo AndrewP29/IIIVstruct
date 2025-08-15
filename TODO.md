@@ -29,19 +29,23 @@
 - [x] Implement `isClosed()` method to verify manifold property (each edge shared by exactly two faces).
 - [x] Add unit tests for `Solid` creation.
 - [x] Add unit tests for `isClosed()` with closed and open examples.
+- [x] Implement `project()` method for `Vertex`, `Face`, and `Solid` classes.
+- [ ] Investigate persistent "Vertices are collinear, cannot form a plane." error in `Face::calculateNormal()` affecting `FaceTest.ProjectMethod` and `SolidTest.ProjectMethod`.
+- [x] Implement projection toggle in `python/visualize.py` (manual projection, now correctly hides original normals and planes).
 
 ## Python Bindings
 - [x] Bind `Vertex` class.
 - [x] Bind `Face` class.
 - [x] Bind `Plane` struct.
 - [x] Bind `Solid` class.
+- [x] Bind `project()` method for `Vertex`, `Face`, and `Solid` classes.
 
 ## Visualization (Integration Tests)
 - [x] Plot a single `Vertex`.
 - [x] Plot a `Face` and its corresponding infinite plane.
 - [x] Plot `Face` normal.
 - [x] Add interactive toggles for visualization elements.
-- [ ] Plot a `Solid` object.
+- [x] Plot a `Solid` object.
 
 ## GUI & Layer Stacking
 - [ ] Implement basic Tkinter GUI for defining rectangular prisms.

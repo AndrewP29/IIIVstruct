@@ -54,6 +54,14 @@ public:
      */
     Plane getPlaneEquation() const;
 
+    /**
+     * @brief Projects the face onto a given plane. If no plane is provided, projects onto the XY plane (z=0).
+     * @param plane The plane to project onto.
+     * @return A new Face object representing the projected face.
+     */
+    Face project(const Plane& plane) const;
+    Face project() const;
+
 private:
     std::shared_ptr<std::vector<IIIV::Vertex>> vertices_ptr_;
     std::vector<size_t> indices_;
